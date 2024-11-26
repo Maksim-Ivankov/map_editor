@@ -9,6 +9,7 @@ YELLOW = '#FBD46D'
 GREEN = '#0AFF89'
 RED = '#FF0A0A'
 
+TILESIZE = 32 # размер блока
 
 
 
