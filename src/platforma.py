@@ -12,6 +12,9 @@ class Platforma(ft.UserControl):
         self.menu_palitra_sp[os.listdir('src/tilemap/palitra')[0]] = True
         self.status_palitra=False
         self.changed_color = []
+        self.flag_hover = False
+        self.flag_hover_back = False
+        self.mas_hover = []
     
     
     # кнопка - загрузить изображение
@@ -97,18 +100,20 @@ class Platforma(ft.UserControl):
         # self.controls[0].content.controls[1].content.controls.append(ft.Container())
         number = (int(self.number_img_celka)-1)*9 + (e.control.data[0]-1)*3 + (e.control.data[1]+1)
         self.status_palitra = True
+        self.number_chank = number
+        # получили файл с картой чанка
+        with open(f'src/map/chank/{self.number_chank}.txt') as f:
+            mas_map = ast.literal_eval(f.readline())
         # рисуем сетку
         line_x_mas = []
         line_y_mas = []
         for i in range(1,COUNT_CHANK+1):
             line_x_mas.clear()
             for j in range(1,COUNT_CHANK+1):
-                line_x_mas.append(ft.Container(data=[i,j],on_hover=self.hover_tile,on_click=self.click_end_tile,on_tap_down=self.click_start_tile,height=TILESIZE,width=TILESIZE,border=ft.border.all(0.1,BLUE)))
-                # line_x_mas.append(ft.Container(data=[i,j],on_hover=self.hover_tile,on_click=self.click_end_tile,on_tap_down=self.click_start_tile,height=TILESIZE,width=TILESIZE,border=ft.border.all(0.1,BLUE),margin=ft.margin.only(left=0,top=0,bottom=0,right=-10)))
+                if mas_map[i-1][j-1] == 0: line_x_mas.append(ft.Container(data=[i,j],on_hover=self.hover_tile,on_click=self.click_end_tile,on_tap_down=self.click_start_tile,height=TILESIZE,width=TILESIZE,border=ft.border.all(0.1,BLUE)))
+                else: line_x_mas.append(ft.Container(ft.Image(src=f'src/tilemap/all/{mas_map[i-1][j-1]}.png',width=32,height=32),data=[i,j],on_hover=self.hover_tile,on_click=self.click_end_tile,on_tap_down=self.click_start_tile,height=TILESIZE,width=TILESIZE,border=ft.border.all(0.1,BLUE)))
             if i==1:line_y_mas.append(ft.Container(ft.Row(controls=line_x_mas,spacing=0,run_spacing=0,)))
             else:line_y_mas.append(ft.Container(ft.Row(controls=line_x_mas,spacing=0,run_spacing=0,)))
-            # else:line_y_mas.append(ft.Container(ft.Row(controls=line_x_mas),margin=ft.margin.only(top=-11.2)))
-
         self.controls[0].content.controls[0].content.controls[1].content.content = ft.Container(ft.Stack([
             ft.Image(src=f'src/img/map_grid/Tile_png/{number}.png',height=HEIGHT_CANVA,width=WIDTH_CANVA,fit=ft.ImageFit.FILL),
             ft.Column(controls=line_y_mas,spacing=0,run_spacing=0,)
@@ -118,20 +123,56 @@ class Platforma(ft.UserControl):
 
     # клик начало по тайлу
     def click_start_tile(self,e):
-        if self.changed_color: e.control.content = ft.Image(src=self.changed_color[0],width=32,height=32)
+        if self.changed_color: 
+            if e.control.content: 
+                now_img = e.control.content
+                e.control.content = ft.Stack([
+                    now_img,
+                    ft.Image(src=self.changed_color[0],width=32,height=32)
+                ])
+            else: e.control.content = ft.Image(src=self.changed_color[0],width=32,height=32)
+            # сохраняем в карту
+            with open(f'src/map/chank/{self.number_chank}.txt') as f:
+                mas_map = ast.literal_eval(f.readline())
+            mas_map[e.control.data[0]-1][e.control.data[1]-1] = int(self.changed_color[1][:-4])
+            my_file = open(f'src/map/chank/{self.number_chank}.txt', "w+")
+            my_file.write(f'{str(mas_map)}')
+            my_file.close()
         self.update()
+        self.flag_hover = True
+        if self.flag_hover_back:
+            with open(f'src/map/chank/{self.number_chank}.txt') as f:
+                mas_map = ast.literal_eval(f.readline())
+            for i in self.mas_hover:
+                # # сохраняем в карту
+                mas_map[i[0]-1][i[1]-1] = int(i[2])
+            mas_map[e.control.data[0]-1][e.control.data[1]-1] = int(self.changed_color[1][:-4])
+            my_file = open(f'src/map/chank/{self.number_chank}.txt', "w+")
+            my_file.write(f'{str(mas_map)}')
+            my_file.close()
+            self.mas_hover[:] = []
+            self.flag_hover_back = False
+            
         
         
     # клик окончание по тайлу
     def click_end_tile(self,e):
-        # print('Кончили')
-        pass
+        self.flag_hover = False
     
     # наведение на тайл
     def hover_tile(self,e):
-        # print(e.control.data)
-        # print(e.control.data)
-        pass
+        if self.flag_hover: 
+            self.flag_hover_back = True
+            if e.control.content: 
+                now_img = e.control.content
+                e.control.content = ft.Stack([
+                    now_img,
+                    ft.Image(src=self.changed_color[0],width=32,height=32)
+                ])
+            else: e.control.content = ft.Image(src=self.changed_color[0],width=32,height=32)
+            # Сохраняем в массив, что построили в режиме ховера
+            self.mas_hover.append([e.control.data[0],e.control.data[1],self.changed_color[1][:-4]])
+            self.update()
     
 
     # выбираем вкладку в меню палитры
@@ -139,8 +180,6 @@ class Platforma(ft.UserControl):
         for i in self.menu_palitra_sp:
             if i == e.control.data: self.menu_palitra_sp[i] = True
             else: self.menu_palitra_sp[i] = False
-        # print(self.controls[0].content.controls[1].content.controls)
-        # len_mas = len(self.controls[0].content.controls[1].content.controls)
         self.controls[0].content.controls[1].content.controls[4].content = self.palitra()
         self.update()
 
@@ -149,7 +188,6 @@ class Platforma(ft.UserControl):
         colors_mas = []
         for i in os.listdir(f'src/tilemap/palitra/{dev_color}'):
             colors_mas.append(ft.Container(ft.Image(src=f'src/tilemap/palitra/{dev_color}/{i}',width=32,height=32),on_click=self.change_dev_color,data=[f'src/tilemap/palitra/{dev_color}/{i}',i],width=32,height=32,bgcolor=BLUE))
-        
         return ft.Container(ft.Row(controls=colors_mas,wrap=True,spacing=5,run_spacing=5,),width=350,padding=10)
 
     def change_dev_color(self,e):
