@@ -11,11 +11,12 @@ class Platforma(ft.UserControl):
             self.menu_palitra_sp[i] = False
         self.menu_palitra_sp[os.listdir('src/tilemap/palitra')[0]] = True
         self.status_palitra=False
+        self.changed_color = []
     
     
     # кнопка - загрузить изображение
     def pick_files_result(self,e: ft.FilePickerResultEvent):
-        # if self.status_palitra: self.controls[0].content.controls[1].content.controls.pop()
+        if self.status_palitra: self.controls[0].content.controls[1].content.controls[4].content = ft.Container()
         self.selected_files.value = (
             ", ".join(map(lambda f: f.name, e.files)) if e.files else "Не выбрано!"
         )
@@ -92,7 +93,7 @@ class Platforma(ft.UserControl):
         self.update()
 
     def get_chank(self,e):
-        self.controls[0].content.controls[1].content.controls.pop(3)
+        self.controls[0].content.controls[1].content.controls[3].content = ft.Container()
         # self.controls[0].content.controls[1].content.controls.append(ft.Container())
         number = (int(self.number_img_celka)-1)*9 + (e.control.data[0]-1)*3 + (e.control.data[1]+1)
         self.status_palitra = True
@@ -102,19 +103,36 @@ class Platforma(ft.UserControl):
         for i in range(1,COUNT_CHANK+1):
             line_x_mas.clear()
             for j in range(1,COUNT_CHANK+1):
-                line_x_mas.append(ft.Container(data=[i,j],on_click=self.click_tile,height=TILESIZE,width=TILESIZE,border=ft.border.all(0.1,BLUE),margin=ft.margin.only(left=0,top=0,bottom=0,right=-10)))
-            if i==1:line_y_mas.append(ft.Container(ft.Row(controls=line_x_mas)))
-            else:line_y_mas.append(ft.Container(ft.Row(controls=line_x_mas),margin=ft.margin.only(top=-11.2)))
+                line_x_mas.append(ft.Container(data=[i,j],on_hover=self.hover_tile,on_click=self.click_end_tile,on_tap_down=self.click_start_tile,height=TILESIZE,width=TILESIZE,border=ft.border.all(0.1,BLUE)))
+                # line_x_mas.append(ft.Container(data=[i,j],on_hover=self.hover_tile,on_click=self.click_end_tile,on_tap_down=self.click_start_tile,height=TILESIZE,width=TILESIZE,border=ft.border.all(0.1,BLUE),margin=ft.margin.only(left=0,top=0,bottom=0,right=-10)))
+            if i==1:line_y_mas.append(ft.Container(ft.Row(controls=line_x_mas,spacing=0,run_spacing=0,)))
+            else:line_y_mas.append(ft.Container(ft.Row(controls=line_x_mas,spacing=0,run_spacing=0,)))
+            # else:line_y_mas.append(ft.Container(ft.Row(controls=line_x_mas),margin=ft.margin.only(top=-11.2)))
 
         self.controls[0].content.controls[0].content.controls[1].content.content = ft.Container(ft.Stack([
             ft.Image(src=f'src/img/map_grid/Tile_png/{number}.png',height=HEIGHT_CANVA,width=WIDTH_CANVA,fit=ft.ImageFit.FILL),
-            ft.Column(controls=line_y_mas)
+            ft.Column(controls=line_y_mas,spacing=0,run_spacing=0,)
         ]),height=HEIGHT_CANVA,width=WIDTH_CANVA)
-        self.controls[0].content.controls[1].content.controls.append(self.palitra())
+        self.controls[0].content.controls[1].content.controls[4].content = self.palitra()
         self.update()
 
-    def click_tile(self,e):
-        print(e.control.data)
+    # клик начало по тайлу
+    def click_start_tile(self,e):
+        if self.changed_color: e.control.content = ft.Image(src=self.changed_color[0],width=32,height=32)
+        self.update()
+        
+        
+    # клик окончание по тайлу
+    def click_end_tile(self,e):
+        # print('Кончили')
+        pass
+    
+    # наведение на тайл
+    def hover_tile(self,e):
+        # print(e.control.data)
+        # print(e.control.data)
+        pass
+    
 
     # выбираем вкладку в меню палитры
     def change_menu_palitra(self,e):
@@ -122,8 +140,8 @@ class Platforma(ft.UserControl):
             if i == e.control.data: self.menu_palitra_sp[i] = True
             else: self.menu_palitra_sp[i] = False
         # print(self.controls[0].content.controls[1].content.controls)
-        len_mas = len(self.controls[0].content.controls[1].content.controls)
-        self.controls[0].content.controls[1].content.controls[len_mas-1] = self.palitra()
+        # len_mas = len(self.controls[0].content.controls[1].content.controls)
+        self.controls[0].content.controls[1].content.controls[4].content = self.palitra()
         self.update()
 
     # рисуем сами краски
@@ -135,7 +153,10 @@ class Platforma(ft.UserControl):
         return ft.Container(ft.Row(controls=colors_mas,wrap=True,spacing=5,run_spacing=5,),width=350,padding=10)
 
     def change_dev_color(self,e):
-        print(e.control.data)
+        # print(e.control.data)
+        self.changed_color = e.control.data
+        self.controls[0].content.controls[0].content.controls[0].content.controls[0].content = ft.Image(src=e.control.data[0],width=32,height=32)
+        self.update()
 
     # рисуем палитру
     def palitra(self):
@@ -155,16 +176,15 @@ class Platforma(ft.UserControl):
         
         pick_files_dialog = ft.FilePicker(on_result=self.pick_files_result)
         self.selected_files = ft.Text(text_align='center',color=WHITE)
-
         self.page.overlay.append(pick_files_dialog)
-        
-        self.size_file = ft.Container()
 
         self.main_page = ft.Container(
             ft.Row(controls=[
                 ft.Container(
                     ft.Row(controls=[
-                            ft.Container(width=100,height=height_window_platforma,border=ft.border.all(1,YELLOW)),
+                            ft.Container(ft.Column(controls=[
+                                    ft.Container(width=32,height=32,border=ft.border.all(1,YELLOW),margin=ft.margin.only(left=34,top=34))
+                                ]),width=100,height=height_window_platforma,border=ft.border.all(1,YELLOW)),
                             ft.Container(ft.Container(
                                     
                                 ),width=WIDTH_CANVA,height=HEIGHT_CANVA,padding=0,margin=ft.margin.only(left=100)),
