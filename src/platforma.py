@@ -95,12 +95,18 @@ class Platforma(ft.UserControl):
         )
         self.update()
 
+    # выбор чанка в общей картинке
     def get_chank(self,e):
         self.controls[0].content.controls[1].content.controls[3].content = ft.Container()
         # self.controls[0].content.controls[1].content.controls.append(ft.Container())
         number = (int(self.number_img_celka)-1)*9 + (e.control.data[0]-1)*3 + (e.control.data[1]+1)
         self.status_palitra = True
         self.number_chank = number
+        self.print_chank()
+        
+
+    # отрисовка чанка
+    def print_chank(self):
         # получили файл с картой чанка
         with open(f'src/map/chank/{self.number_chank}.txt') as f:
             mas_map = ast.literal_eval(f.readline())
@@ -115,7 +121,7 @@ class Platforma(ft.UserControl):
             if i==1:line_y_mas.append(ft.Container(ft.Row(controls=line_x_mas,spacing=0,run_spacing=0,)))
             else:line_y_mas.append(ft.Container(ft.Row(controls=line_x_mas,spacing=0,run_spacing=0,)))
         self.controls[0].content.controls[0].content.controls[1].content.content = ft.Container(ft.Stack([
-            ft.Image(src=f'src/img/map_grid/Tile_png/{number}.png',height=HEIGHT_CANVA,width=WIDTH_CANVA,fit=ft.ImageFit.FILL),
+            ft.Image(src=f'src/img/map_grid/Tile_png/{self.number_chank}.png',height=HEIGHT_CANVA,width=WIDTH_CANVA,fit=ft.ImageFit.FILL),
             ft.Column(controls=line_y_mas,spacing=0,run_spacing=0,)
         ]),height=HEIGHT_CANVA,width=WIDTH_CANVA)
         self.controls[0].content.controls[1].content.controls[4].content = self.palitra()
@@ -174,6 +180,22 @@ class Platforma(ft.UserControl):
             self.mas_hover.append([e.control.data[0],e.control.data[1],self.changed_color[1][:-4]])
             self.update()
     
+    # залить все нули выделенным цветом
+    def fill_zero(self,e):
+        if self.changed_color: 
+            with open(f'src/map/chank/{self.number_chank}.txt') as f:
+                mas_map = ast.literal_eval(f.readline())
+            for i in range(0,COUNT_CHANK):
+                for j in range(0,COUNT_CHANK):
+                    if mas_map[i][j] == 0:
+                        mas_map[i][j] = int(self.changed_color[1][:-4])
+            my_file = open(f'src/map/chank/{self.number_chank}.txt', "w+")
+            my_file.write(f'{str(mas_map)}')
+            my_file.close()
+            # print(f'Заливка цветом {int(self.changed_color[1][:-4])} выполнена')
+            self.print_chank()
+            self.update()
+        # else: print('Сначала выберите чем залить нули')
 
     # выбираем вкладку в меню палитры
     def change_menu_palitra(self,e):
@@ -221,7 +243,8 @@ class Platforma(ft.UserControl):
                 ft.Container(
                     ft.Row(controls=[
                             ft.Container(ft.Column(controls=[
-                                    ft.Container(width=32,height=32,border=ft.border.all(1,YELLOW),margin=ft.margin.only(left=34,top=34))
+                                    ft.Container(width=32,height=32,border=ft.border.all(1,YELLOW),margin=ft.margin.only(left=34,top=34)), # что сейчас выбрано
+                                    ft.Container(ft.Image(src='src/img/img/1.png',height=32,width=32,fit=ft.ImageFit.COVER),on_click=self.fill_zero,width=32,height=32,margin=ft.margin.only(left=34,top=20))# залить все нули в выбранный цвет
                                 ]),width=100,height=height_window_platforma,border=ft.border.all(1,YELLOW)),
                             ft.Container(ft.Container(
                                     
