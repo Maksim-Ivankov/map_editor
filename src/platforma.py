@@ -25,8 +25,13 @@ class Platforma(ft.UserControl):
         )
         # делаем сетку
         self.path_img_celka = e.files[0].path
-        self.number_img_celka = e.files[0].name[:-4]
-        image = Image.open(e.files[0].path)
+        self.e_files_0 = e.files[0]
+        self.print_step_2()
+        
+    # отрисовка загруженной картинки
+    def print_step_2(self):
+        self.number_img_celka = self.e_files_0.name[:-4]
+        image = Image.open(self.e_files_0.path)
         width, height = image.size
 
         step_x = width/(TILESIZE*COUNT_CHANK)# количество чанков по иксу
@@ -89,7 +94,7 @@ class Platforma(ft.UserControl):
             max_scale=500,
             boundary_margin=ft.margin.all(20),
             content=ft.Stack([
-                    ft.Image(src=e.files[0].path,height=HEIGHT_CANVA,width=WIDTH_CANVA,fit=ft.ImageFit.COVER),
+                    ft.Image(src=self.path_img_celka,height=HEIGHT_CANVA,width=WIDTH_CANVA,fit=ft.ImageFit.COVER),
                     ft.Column(controls=line_y_mas)
                 ]),
         )
@@ -218,8 +223,18 @@ class Platforma(ft.UserControl):
         self.controls[0].content.controls[0].content.controls[0].content.controls[0].content = ft.Image(src=e.control.data[0],width=32,height=32)
         self.update()
 
+    # Кнопка назад
+    def btn_back(self,e):
+        self.print_step_2()
+
     # рисуем палитру
     def palitra(self):
+        # добавляем кнопку назад
+        self.controls[0].content.controls[1].content.controls[2] = ft.Container(ft.Row(controls=[
+            ft.Container(ft.Text('Назад',size=16,color=BLUE,text_align='center'),on_click=self.btn_back,height=40,padding=ft.padding.only(top=5),bgcolor=YELLOW,width=100,margin=ft.margin.only(left=0)),
+            ft.Container(ft.Text('Загрузить изображение',size=16,color=BLUE,text_align='center'),on_click=lambda _: self.pick_files_dialog.pick_files(allow_multiple=True ),height=40,padding=ft.padding.only(top=5),bgcolor=YELLOW,width=220,margin=ft.margin.only(left=0)),
+        ]),margin=ft.margin.only(left=28))
+        self.update()
         menu_palitra_mas = []
         for i in self.menu_palitra_sp:
             if self.menu_palitra_sp[i]:
@@ -234,9 +249,9 @@ class Platforma(ft.UserControl):
 
     def build(self):
         
-        pick_files_dialog = ft.FilePicker(on_result=self.pick_files_result)
+        self.pick_files_dialog = ft.FilePicker(on_result=self.pick_files_result)
         self.selected_files = ft.Text(text_align='center',color=WHITE)
-        self.page.overlay.append(pick_files_dialog)
+        self.page.overlay.append(self.pick_files_dialog)
 
         self.main_page = ft.Container(
             ft.Row(controls=[
@@ -255,7 +270,7 @@ class Platforma(ft.UserControl):
                     ft.Column(controls=[
                         ft.Container(ft.Text('Редактор карт',size=24,color=BLUE,text_align='center'),height=50,padding=ft.padding.only(top=8),bgcolor=YELLOW,width=400),
                         ft.Container(ft.Text('Выберите изображения на фон сетки, по которому будет рисоваться карта',color=WHITE,text_align='center'),width=400,padding=10),
-                        ft.Container(ft.Text('Загрузить изображение',size=16,color=BLUE,text_align='center'),on_click=lambda _: pick_files_dialog.pick_files(allow_multiple=True ),height=40,padding=ft.padding.only(top=5),bgcolor=YELLOW,width=280,margin=ft.margin.only(left=60)),
+                        ft.Container(ft.Text('Загрузить изображение',size=16,color=BLUE,text_align='center'),on_click=lambda _: self.pick_files_dialog.pick_files(allow_multiple=True ),height=40,padding=ft.padding.only(top=5),bgcolor=YELLOW,width=280,margin=ft.margin.only(left=60)),
                         ft.Container(self.selected_files,width=400),
                         ft.Container(),
                     ]),
