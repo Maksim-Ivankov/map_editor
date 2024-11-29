@@ -29,37 +29,11 @@ class Platforma(ft.UserControl):
         self.coords_4 = [MAP_CHANK[pos_ugol_chank[0]+1][pos_ugol_chank[1]+1],(pos_ugol_chank[0]+1),(pos_ugol_chank[1]+1)]
         print(f'{self.coords_1[0]}|{self.coords_2[0]}|{self.coords_3[0]}|{self.coords_4[0]}')
         
-
-    # отрисовка чанка
-    def print_chank(self,regime='defolt'):
-        # получили файл с картой чанка
-        with open(f'src/map/chank/{self.number_chank}.txt') as f:
-            mas_map = ast.literal_eval(f.readline())
-        # рисуем сетку
-        line_x_mas = []
-        line_y_mas = []
-        for i in range(1,COUNT_CHANK+1):
-            line_x_mas.clear()
-            for j in range(1,COUNT_CHANK+1):
-                if mas_map[i-1][j-1] == 0: line_x_mas.append(ft.Container(data=[i,j],on_hover=self.hover_tile,on_click=self.click_end_tile,on_tap_down=self.click_start_tile,height=TILESIZE,width=TILESIZE,border=ft.border.all(0.1,BLUE)))
-                else: line_x_mas.append(ft.Container(ft.Image(src=f'src/tilemap/all/{mas_map[i-1][j-1]}.png',width=32,height=32),data=[i,j],on_hover=self.hover_tile,on_click=self.click_end_tile,on_tap_down=self.click_start_tile,height=TILESIZE,width=TILESIZE,border=ft.border.all(0.1,BLUE)))
-            if i==1:line_y_mas.append(ft.Container(ft.Row(controls=line_x_mas,spacing=0,run_spacing=0,)))
-            else:line_y_mas.append(ft.Container(ft.Row(controls=line_x_mas,spacing=0,run_spacing=0,)))
-        if regime == 'defolt':
-            self.controls[0].content.controls[0].content.controls[1].content.content = ft.Container(ft.Stack([
-                ft.Image(src=f'src/img/map_grid/Tile_png/{self.number_chank}.png',height=HEIGHT_CANVA,width=WIDTH_CANVA,fit=ft.ImageFit.FILL),
-                ft.Column(controls=line_y_mas,spacing=0,run_spacing=0,)
-            ]),height=HEIGHT_CANVA,width=WIDTH_CANVA)
-            self.update()
-        elif regime=='print':
-            return ft.Container(ft.Stack([
-                ft.Image(src=f'src/img/map_grid/Tile_png/{self.number_chank}.png',height=HEIGHT_CANVA,width=WIDTH_CANVA,fit=ft.ImageFit.FILL),
-                ft.Column(controls=line_y_mas,spacing=0,run_spacing=0,)
-            ]),height=HEIGHT_CANVA,width=WIDTH_CANVA)
             
 
     # клик начало по тайлу
     def click_start_tile(self,e):
+        # print(e.control.data)
         if self.changed_color: 
             if e.control.content: 
                 now_img = e.control.content
@@ -69,24 +43,25 @@ class Platforma(ft.UserControl):
                 ])
             else: e.control.content = ft.Image(src=self.changed_color[0],width=32,height=32)
             # сохраняем в карту
-            with open(f'src/map/chank/{self.number_chank}.txt') as f:
+            with open(f'src/map/chamk_chetvert/{e.control.data[2]}.txt') as f:
                 mas_map = ast.literal_eval(f.readline())
             mas_map[e.control.data[0]-1][e.control.data[1]-1] = int(self.changed_color[1][:-4])
-            my_file = open(f'src/map/chank/{self.number_chank}.txt', "w+")
+            my_file = open(f'src/map/chamk_chetvert/{e.control.data[2]}.txt', "w+")
             my_file.write(f'{str(mas_map)}')
             my_file.close()
         self.update()
         self.flag_hover = True
         if self.flag_hover_back:
-            with open(f'src/map/chank/{self.number_chank}.txt') as f:
-                mas_map = ast.literal_eval(f.readline())
+            # print(self.mas_hover)
             for i in self.mas_hover:
+                with open(f'src/map/chamk_chetvert/{i[3]}.txt') as f:
+                    mas_map = ast.literal_eval(f.readline())
                 # # сохраняем в карту
                 mas_map[i[0]-1][i[1]-1] = int(i[2])
-            mas_map[e.control.data[0]-1][e.control.data[1]-1] = int(self.changed_color[1][:-4])
-            my_file = open(f'src/map/chank/{self.number_chank}.txt', "w+")
-            my_file.write(f'{str(mas_map)}')
-            my_file.close()
+                # mas_map[e.control.data[0]-1][e.control.data[1]-1] = int(self.changed_color[1][:-4])
+                my_file = open(f'src/map/chamk_chetvert/{i[3]}.txt', "w+")
+                my_file.write(f'{str(mas_map)}')
+                my_file.close()
             self.mas_hover[:] = []
             self.flag_hover_back = False
               
@@ -106,26 +81,27 @@ class Platforma(ft.UserControl):
                 ])
             else: e.control.content = ft.Image(src=self.changed_color[0],width=32,height=32)
             # Сохраняем в массив, что построили в режиме ховера
-            self.mas_hover.append([e.control.data[0],e.control.data[1],self.changed_color[1][:-4]])
+            self.mas_hover.append([e.control.data[0],e.control.data[1],self.changed_color[1][:-4],e.control.data[2]])
             self.update()
     
     # # залить все нули выделенным цветом
     def fill_zero(self,e):
-        print('Типа залили')
-    #     if self.changed_color: 
-    #         with open(f'src/map/chank/{self.number_chank}.txt') as f:
-    #             mas_map = ast.literal_eval(f.readline())
-    #         for i in range(0,COUNT_CHANK):
-    #             for j in range(0,COUNT_CHANK):
-    #                 if mas_map[i][j] == 0:
-    #                     mas_map[i][j] = int(self.changed_color[1][:-4])
-    #         my_file = open(f'src/map/chank/{self.number_chank}.txt', "w+")
-    #         my_file.write(f'{str(mas_map)}')
-    #         my_file.close()
-    #         # print(f'Заливка цветом {int(self.changed_color[1][:-4])} выполнена')
-    #         self.print_chank()
-    #         self.update()
-    #     # else: print('Сначала выберите чем залить нули')
+        # print('Типа залили')
+        if self.changed_color: 
+            for name_chetv_chank in [self.coords_1[0],self.coords_2[0],self.coords_3[0],self.coords_4[0]]:
+                with open(f'src/map/chamk_chetvert/{name_chetv_chank}.txt') as f:
+                    mas_map = ast.literal_eval(f.readline())
+                for i in range(0,15):
+                    for j in range(0,15):
+                        if mas_map[i][j] == 0:
+                            mas_map[i][j] = int(self.changed_color[1][:-4])
+                my_file = open(f'src/map/chamk_chetvert/{name_chetv_chank}.txt', "w+")
+                my_file.write(f'{str(mas_map)}')
+                my_file.close()
+                # print(f'Заливка цветом {int(self.changed_color[1][:-4])} выполнена')
+                self.print_chank_chetvert([self.coords_1[0],self.coords_2[0],self.coords_3[0],self.coords_4[0]])
+                self.update()
+        else: print('Сначала выберите чем залить нули')
 
     # выбираем вкладку в меню палитры
     def change_menu_palitra(self,e):
@@ -181,21 +157,18 @@ class Platforma(ft.UserControl):
             # если целая часть всех чисел равно, то это один и тот же чанк. Просто отрисуем его.
             if int(self.coords_1[0]) == int(self.coords_2[0]) and int(self.coords_1[0]) == int(self.coords_3[0]) and int(self.coords_1[0]) == int(self.coords_4[0]):
                 self.number_chank = self.coords_1[0]
-                self.print_chank()
+                self.print_chank_chetvert([self.coords_1[0],self.coords_2[0],self.coords_3[0],self.coords_4[0]])
        
        
     # отрисовка четвертинок чанка
-    def print_chank_chetvert(self,cords):
+    def print_chank_chetvert(self,cords,regime='default'):
         mas_fore_pol_chanks = []
         mas_fore_pol_chanks.clear()
         count_l = 0
-        if int(self.coords_1[0]) == int(self.coords_2[0]) and int(self.coords_1[0]) == int(self.coords_3[0]) and int(self.coords_1[0]) == int(self.coords_4[0]):
-            print(f'Чанк - {int(self.coords_1[0])}')
-            self.controls[0].content.controls[1].content.controls[1].content.controls[1].content.controls[1] = Input(self.input_num_chank,str(self.coords_1[0]),50)
-            self.update()
-        for i in cords: # итерируемся по 4 названием текущих чанков
+        for cords_i in cords: # итерируемся по 4 названием текущих чанков
             # получили файл с картой чанка
-            with open(f'src/map/chamk_chetvert/{i}.txt') as f:
+            # print(f'src/map/chamk_chetvert/{cords_i}.txt')
+            with open(f'src/map/chamk_chetvert/{cords_i}.txt') as f:
                 mas_map = ast.literal_eval(f.readline())
             # рисуем сетку
             line_x_mas = []
@@ -206,33 +179,54 @@ class Platforma(ft.UserControl):
                 for j in range(1,16):
                     # line_x_mas.append(ft.Container(data=[i,j],on_hover=self.hover_tile,on_click=self.click_end_tile,on_tap_down=self.click_start_tile,height=TILESIZE,width=TILESIZE,border=ft.border.all(0.1,BLUE)))
                     # # else: line_x_mas.append(ft.Container(ft.Image(src=f'src/tilemap/all/{mas_map[i-1][j-1]}.png',width=32,height=32),data=[i,j],on_hover=self.hover_tile,on_click=self.click_end_tile,on_tap_down=self.click_start_tile,height=TILESIZE,width=TILESIZE,border=ft.border.all(0.1,BLUE)))
-                    if mas_map[i-1][j-1] == 0: line_x_mas.append(ft.Container(data=[i,j],on_hover=self.hover_tile,on_click=self.click_end_tile,on_tap_down=self.click_start_tile,height=TILESIZE,width=TILESIZE,border=ft.border.all(0.1,BLUE)))
-                    else: line_x_mas.append(ft.Container(ft.Image(src=f'src/tilemap/all/{mas_map[i-1][j-1]}.png',width=32,height=32),data=[i,j],on_hover=self.hover_tile,on_click=self.click_end_tile,on_tap_down=self.click_start_tile,height=TILESIZE,width=TILESIZE,border=ft.border.all(0.1,BLUE)))
+                    if mas_map[i-1][j-1] == 0: line_x_mas.append(ft.Container(data=[i,j,cords_i],on_hover=self.hover_tile,on_click=self.click_end_tile,on_tap_down=self.click_start_tile,height=TILESIZE,width=TILESIZE,border=ft.border.all(0.1,BLUE)))
+                    else: line_x_mas.append(ft.Container(ft.Image(src=f'src/tilemap/all/{mas_map[i-1][j-1]}.png',width=32,height=32),data=[i,j,cords_i],on_hover=self.hover_tile,on_click=self.click_end_tile,on_tap_down=self.click_start_tile,height=TILESIZE,width=TILESIZE,border=ft.border.all(0.1,BLUE)))
                 line_y_mas.append(ft.Container(ft.Row(controls=line_x_mas,spacing=0,run_spacing=0,)))
             mas_fore_pol_chanks.append(line_y_mas)
-                
-        self.controls[0].content.controls[0].content.controls[1].content.content = ft.Container(ft.Stack([
-            ft.Container(ft.Row(controls=[
-                ft.Image(src=f'src/img/map_grid/Tile_png_chetwert/{cords[0]}.png',height=HEIGHT_CANVA/2,width=WIDTH_CANVA/2,fit=ft.ImageFit.FILL),
-                ft.Image(src=f'src/img/map_grid/Tile_png_chetwert/{cords[1]}.png',height=HEIGHT_CANVA/2,width=WIDTH_CANVA/2,fit=ft.ImageFit.FILL),
-                ft.Image(src=f'src/img/map_grid/Tile_png_chetwert/{cords[2]}.png',height=HEIGHT_CANVA/2,width=WIDTH_CANVA/2,fit=ft.ImageFit.FILL),
-                ft.Image(src=f'src/img/map_grid/Tile_png_chetwert/{cords[3]}.png',height=HEIGHT_CANVA/2,width=WIDTH_CANVA/2,fit=ft.ImageFit.FILL),
-            ],wrap=True,spacing=0,run_spacing=0)),
-            ft.Container(ft.Row(controls=[
-                ft.Container(ft.Column(controls=mas_fore_pol_chanks[0],spacing=0,run_spacing=0,),width=WIDTH_CANVA/2,height=HEIGHT_CANVA/2),
-                ft.Container(ft.Column(controls=mas_fore_pol_chanks[1],spacing=0,run_spacing=0,),width=WIDTH_CANVA/2,height=HEIGHT_CANVA/2),
-                ft.Container(ft.Column(controls=mas_fore_pol_chanks[2],spacing=0,run_spacing=0,),width=WIDTH_CANVA/2,height=HEIGHT_CANVA/2),
-                ft.Container(ft.Column(controls=mas_fore_pol_chanks[3],spacing=0,run_spacing=0,),width=WIDTH_CANVA/2,height=HEIGHT_CANVA/2),
-                
-            ],wrap=True,spacing=0,run_spacing=0)),
-            # ft.Column(controls=line_y_mas,spacing=0,run_spacing=0,)
-        ]),height=HEIGHT_CANVA,width=WIDTH_CANVA)
-        self.update()
+        if regime == 'default':
+            # if int(self.coords_1[0]) == int(self.coords_2[0]) and int(self.coords_1[0]) == int(self.coords_3[0]) and int(self.coords_1[0]) == int(self.coords_4[0]):
+            #     self.controls[0].content.controls[1].content.controls[1].content.controls[1].content.controls[1] = Input(self.input_num_chank,str(self.coords_1[0]),50)
+            #     self.update()
+            self.controls[0].content.controls[0].content.controls[1].content.content = ft.Container(ft.Stack([
+                ft.Container(ft.Row(controls=[
+                    ft.Image(src=f'src/img/map_grid/Tile_png_chetwert/{cords[0]}.png',height=HEIGHT_CANVA/2,width=WIDTH_CANVA/2,fit=ft.ImageFit.FILL),
+                    ft.Image(src=f'src/img/map_grid/Tile_png_chetwert/{cords[1]}.png',height=HEIGHT_CANVA/2,width=WIDTH_CANVA/2,fit=ft.ImageFit.FILL),
+                    ft.Image(src=f'src/img/map_grid/Tile_png_chetwert/{cords[2]}.png',height=HEIGHT_CANVA/2,width=WIDTH_CANVA/2,fit=ft.ImageFit.FILL),
+                    ft.Image(src=f'src/img/map_grid/Tile_png_chetwert/{cords[3]}.png',height=HEIGHT_CANVA/2,width=WIDTH_CANVA/2,fit=ft.ImageFit.FILL),
+                ],wrap=True,spacing=0,run_spacing=0)),
+                ft.Container(ft.Row(controls=[
+                    ft.Container(ft.Column(controls=mas_fore_pol_chanks[0],spacing=0,run_spacing=0,),width=WIDTH_CANVA/2,height=HEIGHT_CANVA/2),
+                    ft.Container(ft.Column(controls=mas_fore_pol_chanks[1],spacing=0,run_spacing=0,),width=WIDTH_CANVA/2,height=HEIGHT_CANVA/2),
+                    ft.Container(ft.Column(controls=mas_fore_pol_chanks[2],spacing=0,run_spacing=0,),width=WIDTH_CANVA/2,height=HEIGHT_CANVA/2),
+                    ft.Container(ft.Column(controls=mas_fore_pol_chanks[3],spacing=0,run_spacing=0,),width=WIDTH_CANVA/2,height=HEIGHT_CANVA/2),
+                    
+                ],wrap=True,spacing=0,run_spacing=0)),
+                # ft.Column(controls=line_y_mas,spacing=0,run_spacing=0,)
+            ]),height=HEIGHT_CANVA,width=WIDTH_CANVA)
+            self.update()
+        else: # для отрисовки 1 раз при старте
+            return ft.Container(ft.Stack([
+                ft.Container(ft.Row(controls=[
+                    ft.Image(src=f'src/img/map_grid/Tile_png_chetwert/{cords[0]}.png',height=HEIGHT_CANVA/2,width=WIDTH_CANVA/2,fit=ft.ImageFit.FILL),
+                    ft.Image(src=f'src/img/map_grid/Tile_png_chetwert/{cords[1]}.png',height=HEIGHT_CANVA/2,width=WIDTH_CANVA/2,fit=ft.ImageFit.FILL),
+                    ft.Image(src=f'src/img/map_grid/Tile_png_chetwert/{cords[2]}.png',height=HEIGHT_CANVA/2,width=WIDTH_CANVA/2,fit=ft.ImageFit.FILL),
+                    ft.Image(src=f'src/img/map_grid/Tile_png_chetwert/{cords[3]}.png',height=HEIGHT_CANVA/2,width=WIDTH_CANVA/2,fit=ft.ImageFit.FILL),
+                ],wrap=True,spacing=0,run_spacing=0)),
+                ft.Container(ft.Row(controls=[
+                    ft.Container(ft.Column(controls=mas_fore_pol_chanks[0],spacing=0,run_spacing=0,),width=WIDTH_CANVA/2,height=HEIGHT_CANVA/2),
+                    ft.Container(ft.Column(controls=mas_fore_pol_chanks[1],spacing=0,run_spacing=0,),width=WIDTH_CANVA/2,height=HEIGHT_CANVA/2),
+                    ft.Container(ft.Column(controls=mas_fore_pol_chanks[2],spacing=0,run_spacing=0,),width=WIDTH_CANVA/2,height=HEIGHT_CANVA/2),
+                    ft.Container(ft.Column(controls=mas_fore_pol_chanks[3],spacing=0,run_spacing=0,),width=WIDTH_CANVA/2,height=HEIGHT_CANVA/2),
+                    
+                ],wrap=True,spacing=0,run_spacing=0)),
+                # ft.Column(controls=line_y_mas,spacing=0,run_spacing=0,)
+            ]),height=HEIGHT_CANVA,width=WIDTH_CANVA)
        
     # нажатие на стрелки пермещение по карте
     def offset_btn(self,e):
         # try:
             # print()
+            self.controls[0].content.controls[1].content.controls[1].content.controls[1].content.controls[1] = Input(self.input_num_chank,str(self.coords_1[0]),50)
             if e.control.data == 'right':
                 a1 = MAP_CHANK[(self.coords_1[1])][(self.coords_1[2]+1)] # получили номер четвертины чанка
                 a2 = MAP_CHANK[(self.coords_2[1])][(self.coords_2[2]+1)] # получили номер четвертины чанка
@@ -260,7 +254,9 @@ class Platforma(ft.UserControl):
                             # print(f"==>> pos_ugol_chank: {pos_ugol_chank}")
                             break
                 
-                # if pos_ugol_chank[1]!=0: 
+                if pos_ugol_chank[1]==0: 
+                    self.controls[0].content.controls[1].content.controls[1].content.controls[1].content.controls[1] = ft.Container(ft.Text('|<',color=WHITE),width=50,height=50,bgcolor=RED)
+                    self.update()
                 self.coords_1 = [a1,pos_ugol_chank[0],pos_ugol_chank[1]] # перезаписываем массив со значением и координатами этих значений
                 self.coords_2 = [a2,pos_ugol_chank[0],(pos_ugol_chank[1]+1)] # перезаписываем массив со значением и координатами этих значений
                 self.coords_3 = [a3,(pos_ugol_chank[0]+1),pos_ugol_chank[1]] # перезаписываем массив со значением и координатами этих значений
@@ -275,7 +271,9 @@ class Platforma(ft.UserControl):
                         if a1 == MAP_CHANK[j][i]: # получили номер левого верхнего угла зоны просмотра, по нему дальше посчитали оординаты зоны просмотра
                             pos_ugol_chank = [j,i]
                             break
-                # if pos_ugol_chank[0]!=0:
+                if pos_ugol_chank[0]==0: 
+                    self.controls[0].content.controls[1].content.controls[1].content.controls[1].content.controls[1] = ft.Container(ft.Text('!',color=WHITE),width=50,height=50,bgcolor=RED)
+                    self.update()
                 self.coords_1 = [a1,pos_ugol_chank[0],pos_ugol_chank[1]] # перезаписываем массив со значением и координатами этих значений
                 self.coords_2 = [a2,pos_ugol_chank[0],(pos_ugol_chank[1]+1)] # перезаписываем массив со значением и координатами этих значений
                 self.coords_3 = [a3,(pos_ugol_chank[0]+1),pos_ugol_chank[1]] # перезаписываем массив со значением и координатами этих значений
@@ -311,7 +309,7 @@ class Platforma(ft.UserControl):
                                     ft.Container(ft.Image(src='src/img/img/1.png',height=32,width=32,fit=ft.ImageFit.COVER),on_click=self.fill_zero,width=32,height=32,margin=ft.margin.only(left=34,top=20))# залить все нули в выбранный цвет
                                 ]),width=100,height=height_window_platforma,border=ft.border.all(1,YELLOW)),
                             ft.Container(ft.Container(
-                                self.print_chank('print') # отрисовываем вначале дефолтный чанк
+                                self.print_chank_chetvert([self.coords_1[0],self.coords_2[0],self.coords_3[0],self.coords_4[0]],'print') # отрисовываем вначале дефолтный чанк
                             ),width=WIDTH_CANVA,height=HEIGHT_CANVA,padding=0,margin=ft.margin.only(left=100)),
                         ]),
                     width=1200,height=height_window_platforma,bgcolor=BLUE),
