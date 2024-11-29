@@ -186,20 +186,31 @@ class Platforma(ft.UserControl):
        
     # отрисовка четвертинок чанка
     def print_chank_chetvert(self,cords):
-            
-        # # получили файл с картой чанка
-        # with open(f'src/map/chank/{self.number_chank}.txt') as f:
-        #     mas_map = ast.literal_eval(f.readline())
-        # # рисуем сетку
-        # line_x_mas = []
-        # line_y_mas = []
-        # for i in range(1,COUNT_CHANK+1):
-        #     line_x_mas.clear()
-        #     for j in range(1,COUNT_CHANK+1):
-        #         if mas_map[i-1][j-1] == 0: line_x_mas.append(ft.Container(data=[i,j],on_hover=self.hover_tile,on_click=self.click_end_tile,on_tap_down=self.click_start_tile,height=TILESIZE,width=TILESIZE,border=ft.border.all(0.1,BLUE)))
-        #         else: line_x_mas.append(ft.Container(ft.Image(src=f'src/tilemap/all/{mas_map[i-1][j-1]}.png',width=32,height=32),data=[i,j],on_hover=self.hover_tile,on_click=self.click_end_tile,on_tap_down=self.click_start_tile,height=TILESIZE,width=TILESIZE,border=ft.border.all(0.1,BLUE)))
-        #     if i==1:line_y_mas.append(ft.Container(ft.Row(controls=line_x_mas,spacing=0,run_spacing=0,)))
-        #     else:line_y_mas.append(ft.Container(ft.Row(controls=line_x_mas,spacing=0,run_spacing=0,)))
+        mas_fore_pol_chanks = []
+        mas_fore_pol_chanks.clear()
+        count_l = 0
+        if int(self.coords_1[0]) == int(self.coords_2[0]) and int(self.coords_1[0]) == int(self.coords_3[0]) and int(self.coords_1[0]) == int(self.coords_4[0]):
+            print(f'Чанк - {int(self.coords_1[0])}')
+            self.controls[0].content.controls[1].content.controls[1].content.controls[1].content.controls[1] = Input(self.input_num_chank,str(self.coords_1[0]),50)
+            self.update()
+        for i in cords: # итерируемся по 4 названием текущих чанков
+            # получили файл с картой чанка
+            with open(f'src/map/chamk_chetvert/{i}.txt') as f:
+                mas_map = ast.literal_eval(f.readline())
+            # рисуем сетку
+            line_x_mas = []
+            line_y_mas = []
+            line_y_mas.clear()
+            for i in range(1,16):
+                line_x_mas.clear()
+                for j in range(1,16):
+                    # line_x_mas.append(ft.Container(data=[i,j],on_hover=self.hover_tile,on_click=self.click_end_tile,on_tap_down=self.click_start_tile,height=TILESIZE,width=TILESIZE,border=ft.border.all(0.1,BLUE)))
+                    # # else: line_x_mas.append(ft.Container(ft.Image(src=f'src/tilemap/all/{mas_map[i-1][j-1]}.png',width=32,height=32),data=[i,j],on_hover=self.hover_tile,on_click=self.click_end_tile,on_tap_down=self.click_start_tile,height=TILESIZE,width=TILESIZE,border=ft.border.all(0.1,BLUE)))
+                    if mas_map[i-1][j-1] == 0: line_x_mas.append(ft.Container(data=[i,j],on_hover=self.hover_tile,on_click=self.click_end_tile,on_tap_down=self.click_start_tile,height=TILESIZE,width=TILESIZE,border=ft.border.all(0.1,BLUE)))
+                    else: line_x_mas.append(ft.Container(ft.Image(src=f'src/tilemap/all/{mas_map[i-1][j-1]}.png',width=32,height=32),data=[i,j],on_hover=self.hover_tile,on_click=self.click_end_tile,on_tap_down=self.click_start_tile,height=TILESIZE,width=TILESIZE,border=ft.border.all(0.1,BLUE)))
+                line_y_mas.append(ft.Container(ft.Row(controls=line_x_mas,spacing=0,run_spacing=0,)))
+            mas_fore_pol_chanks.append(line_y_mas)
+                
         self.controls[0].content.controls[0].content.controls[1].content.content = ft.Container(ft.Stack([
             ft.Container(ft.Row(controls=[
                 ft.Image(src=f'src/img/map_grid/Tile_png_chetwert/{cords[0]}.png',height=HEIGHT_CANVA/2,width=WIDTH_CANVA/2,fit=ft.ImageFit.FILL),
@@ -207,47 +218,87 @@ class Platforma(ft.UserControl):
                 ft.Image(src=f'src/img/map_grid/Tile_png_chetwert/{cords[2]}.png',height=HEIGHT_CANVA/2,width=WIDTH_CANVA/2,fit=ft.ImageFit.FILL),
                 ft.Image(src=f'src/img/map_grid/Tile_png_chetwert/{cords[3]}.png',height=HEIGHT_CANVA/2,width=WIDTH_CANVA/2,fit=ft.ImageFit.FILL),
             ],wrap=True,spacing=0,run_spacing=0)),
-            # ft.Container(ft.Row(controls=[
-            #     ft.Image(src=f'src/img/map_grid/Tile_png_chetwert/{cords[2]}.png',height=HEIGHT_CANVA/2,width=WIDTH_CANVA/2,fit=ft.ImageFit.FILL),
-            #     ft.Image(src=f'src/img/map_grid/Tile_png_chetwert/{cords[3]}.png',height=HEIGHT_CANVA/2,width=WIDTH_CANVA/2,fit=ft.ImageFit.FILL),
-            # ])),
+            ft.Container(ft.Row(controls=[
+                ft.Container(ft.Column(controls=mas_fore_pol_chanks[0],spacing=0,run_spacing=0,),width=WIDTH_CANVA/2,height=HEIGHT_CANVA/2),
+                ft.Container(ft.Column(controls=mas_fore_pol_chanks[1],spacing=0,run_spacing=0,),width=WIDTH_CANVA/2,height=HEIGHT_CANVA/2),
+                ft.Container(ft.Column(controls=mas_fore_pol_chanks[2],spacing=0,run_spacing=0,),width=WIDTH_CANVA/2,height=HEIGHT_CANVA/2),
+                ft.Container(ft.Column(controls=mas_fore_pol_chanks[3],spacing=0,run_spacing=0,),width=WIDTH_CANVA/2,height=HEIGHT_CANVA/2),
+                
+            ],wrap=True,spacing=0,run_spacing=0)),
             # ft.Column(controls=line_y_mas,spacing=0,run_spacing=0,)
         ]),height=HEIGHT_CANVA,width=WIDTH_CANVA)
         self.update()
        
-        
+    # нажатие на стрелки пермещение по карте
     def offset_btn(self,e):
-        if e.control.data == 'right':
-            a1 = MAP_CHANK[(self.coords_1[1])][(self.coords_1[2]+1)] # получили номер четвертины чанка
-            a2 = MAP_CHANK[(self.coords_2[1])][(self.coords_2[2]+1)] # получили номер четвертины чанка
-            a3 = MAP_CHANK[(self.coords_3[1])][(self.coords_3[2]+1)] # получили номер четвертины чанка
-            a4 = MAP_CHANK[(self.coords_4[1])][(self.coords_4[2]+1)] # получили номер четвертины чанка
-            for j in range(0,len(MAP_CHANK)):
-                for i in range(0,len(MAP_CHANK[0])):
-                    if a1 == MAP_CHANK[j][i]: # получили номер левого верхнего угла зоны просмотра, по нему дальше посчитали оординаты зоны просмотра
-                        pos_ugol_chank = [j,i]
-                        break
-            self.coords_1 = [a1,pos_ugol_chank[0],pos_ugol_chank[1]] # перезаписываем массив со значением и координатами этих значений
-            self.coords_2 = [a2,pos_ugol_chank[0],(pos_ugol_chank[1]+1)] # перезаписываем массив со значением и координатами этих значений
-            self.coords_3 = [a3,(pos_ugol_chank[0]+1),pos_ugol_chank[1]] # перезаписываем массив со значением и координатами этих значений
-            self.coords_4 = [a4,(pos_ugol_chank[0]+1),(pos_ugol_chank[1]+1)] # перезаписываем массив со значением и координатами этих значений
-        if e.control.data == 'left':
-            a1 = MAP_CHANK[(self.coords_1[1])][(self.coords_1[2]-1)] # получили номер четвертины чанка
-            a2 = MAP_CHANK[(self.coords_2[1])][(self.coords_2[2]-1)] # получили номер четвертины чанка
-            a3 = MAP_CHANK[(self.coords_3[1])][(self.coords_3[2]-1)] # получили номер четвертины чанка
-            a4 = MAP_CHANK[(self.coords_4[1])][(self.coords_4[2]-1)] # получили номер четвертины чанка
-            for j in range(0,len(MAP_CHANK)):
-                for i in range(0,len(MAP_CHANK[0])):
-                    if a1 == MAP_CHANK[j][i]: # получили номер левого верхнего угла зоны просмотра, по нему дальше посчитали оординаты зоны просмотра
-                        pos_ugol_chank = [j,i]
-                        break
-            self.coords_1 = [a1,pos_ugol_chank[0],pos_ugol_chank[1]] # перезаписываем массив со значением и координатами этих значений
-            self.coords_2 = [a2,pos_ugol_chank[0],(pos_ugol_chank[1]+1)] # перезаписываем массив со значением и координатами этих значений
-            self.coords_3 = [a3,(pos_ugol_chank[0]+1),pos_ugol_chank[1]] # перезаписываем массив со значением и координатами этих значений
-            self.coords_4 = [a4,(pos_ugol_chank[0]+1),(pos_ugol_chank[1]+1)] # перезаписываем массив со значением и координатами этих значений
-            
-            # print(f'Нажали вправо {a1}|{a2}|{a3}|{a4}') # 1.25|2|1.75|2.5
-        self.print_chank_chetvert([a1,a2,a3,a4])
+        # try:
+            # print()
+            if e.control.data == 'right':
+                a1 = MAP_CHANK[(self.coords_1[1])][(self.coords_1[2]+1)] # получили номер четвертины чанка
+                a2 = MAP_CHANK[(self.coords_2[1])][(self.coords_2[2]+1)] # получили номер четвертины чанка
+                a3 = MAP_CHANK[(self.coords_3[1])][(self.coords_3[2]+1)] # получили номер четвертины чанка
+                a4 = MAP_CHANK[(self.coords_4[1])][(self.coords_4[2]+1)] # получили номер четвертины чанка
+                for j in range(0,len(MAP_CHANK)):
+                    for i in range(0,len(MAP_CHANK[0])):
+                        if a1 == MAP_CHANK[j][i]: # получили номер левого верхнего угла зоны просмотра, по нему дальше посчитали оординаты зоны просмотра
+                            pos_ugol_chank = [j,i]
+                            break
+                self.coords_1 = [a1,pos_ugol_chank[0],pos_ugol_chank[1]] # перезаписываем массив со значением и координатами этих значений
+                self.coords_2 = [a2,pos_ugol_chank[0],(pos_ugol_chank[1]+1)] # перезаписываем массив со значением и координатами этих значений
+                self.coords_3 = [a3,(pos_ugol_chank[0]+1),pos_ugol_chank[1]] # перезаписываем массив со значением и координатами этих значений
+                self.coords_4 = [a4,(pos_ugol_chank[0]+1),(pos_ugol_chank[1]+1)] # перезаписываем массив со значением и координатами этих значений
+            if e.control.data == 'left':
+                a1 = MAP_CHANK[(self.coords_1[1])][(self.coords_1[2]-1)] # получили номер четвертины чанка
+                # print(f"==>> a1: {a1}")
+                a2 = MAP_CHANK[(self.coords_2[1])][(self.coords_2[2]-1)] # получили номер четвертины чанка
+                a3 = MAP_CHANK[(self.coords_3[1])][(self.coords_3[2]-1)] # получили номер четвертины чанка
+                a4 = MAP_CHANK[(self.coords_4[1])][(self.coords_4[2]-1)] # получили номер четвертины чанка
+                for j in range(0,len(MAP_CHANK)):
+                    for i in range(0,len(MAP_CHANK[0])):
+                        if a1 == MAP_CHANK[j][i]: # получили номер левого верхнего угла зоны просмотра, по нему дальше посчитали оординаты зоны просмотра
+                            pos_ugol_chank = [j,i]
+                            # print(f"==>> pos_ugol_chank: {pos_ugol_chank}")
+                            break
+                
+                # if pos_ugol_chank[1]!=0: 
+                self.coords_1 = [a1,pos_ugol_chank[0],pos_ugol_chank[1]] # перезаписываем массив со значением и координатами этих значений
+                self.coords_2 = [a2,pos_ugol_chank[0],(pos_ugol_chank[1]+1)] # перезаписываем массив со значением и координатами этих значений
+                self.coords_3 = [a3,(pos_ugol_chank[0]+1),pos_ugol_chank[1]] # перезаписываем массив со значением и координатами этих значений
+                self.coords_4 = [a4,(pos_ugol_chank[0]+1),(pos_ugol_chank[1]+1)] # перезаписываем массив со значением и координатами этих значений
+            if e.control.data == 'up':
+                a1 = MAP_CHANK[(self.coords_1[1]-1)][(self.coords_1[2])] # получили номер четвертины чанка
+                a2 = MAP_CHANK[(self.coords_2[1]-1)][(self.coords_2[2])] # получили номер четвертины чанка
+                a3 = MAP_CHANK[(self.coords_3[1]-1)][(self.coords_3[2])] # получили номер четвертины чанка
+                a4 = MAP_CHANK[(self.coords_4[1]-1)][(self.coords_4[2])] # получили номер четвертины чанка
+                for j in range(0,len(MAP_CHANK)):
+                    for i in range(0,len(MAP_CHANK[0])):
+                        if a1 == MAP_CHANK[j][i]: # получили номер левого верхнего угла зоны просмотра, по нему дальше посчитали оординаты зоны просмотра
+                            pos_ugol_chank = [j,i]
+                            break
+                # if pos_ugol_chank[0]!=0:
+                self.coords_1 = [a1,pos_ugol_chank[0],pos_ugol_chank[1]] # перезаписываем массив со значением и координатами этих значений
+                self.coords_2 = [a2,pos_ugol_chank[0],(pos_ugol_chank[1]+1)] # перезаписываем массив со значением и координатами этих значений
+                self.coords_3 = [a3,(pos_ugol_chank[0]+1),pos_ugol_chank[1]] # перезаписываем массив со значением и координатами этих значений
+                self.coords_4 = [a4,(pos_ugol_chank[0]+1),(pos_ugol_chank[1]+1)] # перезаписываем массив со значением и координатами этих значений
+            if e.control.data == 'down':
+                a1 = MAP_CHANK[(self.coords_1[1]+1)][(self.coords_1[2])] # получили номер четвертины чанка
+                a2 = MAP_CHANK[(self.coords_2[1]+1)][(self.coords_2[2])] # получили номер четвертины чанка
+                a3 = MAP_CHANK[(self.coords_3[1]+1)][(self.coords_3[2])] # получили номер четвертины чанка
+                a4 = MAP_CHANK[(self.coords_4[1]+1)][(self.coords_4[2])] # получили номер четвертины чанка
+                for j in range(0,len(MAP_CHANK)):
+                    for i in range(0,len(MAP_CHANK[0])):
+                        if a1 == MAP_CHANK[j][i]: # получили номер левого верхнего угла зоны просмотра, по нему дальше посчитали оординаты зоны просмотра
+                            pos_ugol_chank = [j,i]
+                            break
+                self.coords_1 = [a1,pos_ugol_chank[0],pos_ugol_chank[1]] # перезаписываем массив со значением и координатами этих значений
+                self.coords_2 = [a2,pos_ugol_chank[0],(pos_ugol_chank[1]+1)] # перезаписываем массив со значением и координатами этих значений
+                self.coords_3 = [a3,(pos_ugol_chank[0]+1),pos_ugol_chank[1]] # перезаписываем массив со значением и координатами этих значений
+                self.coords_4 = [a4,(pos_ugol_chank[0]+1),(pos_ugol_chank[1]+1)] # перезаписываем массив со значением и координатами этих значений
+                
+            # print(f'{a1}|{a2}|{a3}|{a4}') # 1.25|2|1.75|2.5
+            self.print_chank_chetvert([a1,a2,a3,a4])
+        # except Exception as e:
+        #     print('У границы или ошибка')
 
 
     def build(self):
@@ -268,13 +319,13 @@ class Platforma(ft.UserControl):
                     ft.Column(controls=[
                         ft.Container(ft.Text('Редактор карт',size=24,color=BLUE,text_align='center'),height=50,padding=ft.padding.only(top=8),bgcolor=YELLOW,width=400),
                         ft.Container(ft.Column(controls=[
-                                ft.Container(ft.Image(src='src/img/img/4.png',width=50,height=50),margin=ft.margin.only(left=60)),
+                                ft.Container(ft.Image(src='src/img/img/4.png',width=50,height=50),margin=ft.margin.only(left=60),data='up',on_click=self.offset_btn),
                                 ft.Container(ft.Row(controls=[
                                     ft.Container(ft.Image(src='src/img/img/3.png',width=50,height=50),data='left',on_click=self.offset_btn),
                                     Input(self.input_num_chank,str(CHANK_START),50),
                                     ft.Container(ft.Image(src='src/img/img/2.png',width=50,height=50),data='right',on_click=self.offset_btn),
                                 ])),
-                                ft.Container(ft.Image(src='src/img/img/5.png',width=50,height=50),margin=ft.margin.only(left=60)),
+                                ft.Container(ft.Image(src='src/img/img/5.png',width=50,height=50),margin=ft.margin.only(left=60),data='down',on_click=self.offset_btn),
                             ]),margin=ft.margin.only(left=20)),
                         ft.Container(width=360,height=1,bgcolor=WHITE,margin=ft.margin.only(left=20)),
                         ft.Container(self.palitra()),
