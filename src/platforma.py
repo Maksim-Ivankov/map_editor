@@ -27,43 +27,90 @@ class Platforma(ft.UserControl):
         self.coords_2 = [MAP_CHANK[pos_ugol_chank[0]][pos_ugol_chank[1]+1],pos_ugol_chank[0],(pos_ugol_chank[1]+1)]
         self.coords_3 = [MAP_CHANK[pos_ugol_chank[0]+1][pos_ugol_chank[1]],(pos_ugol_chank[0]+1),pos_ugol_chank[1]]
         self.coords_4 = [MAP_CHANK[pos_ugol_chank[0]+1][pos_ugol_chank[1]+1],(pos_ugol_chank[0]+1),(pos_ugol_chank[1]+1)]
-        print(f'{self.coords_1[0]}|{self.coords_2[0]}|{self.coords_3[0]}|{self.coords_4[0]}')
+        # print(f'{self.coords_1[0]}|{self.coords_2[0]}|{self.coords_3[0]}|{self.coords_4[0]}')
+        self.flag_zalifka_diapazon = False
         
             
 
     # клик начало по тайлу
     def click_start_tile(self,e):
-        # print(e.control.data)
-        if self.changed_color: 
-            if e.control.content: 
-                now_img = e.control.content
-                e.control.content = ft.Stack([
-                    now_img,
-                    ft.Image(src=self.changed_color[0],width=32,height=32)
-                ])
-            else: e.control.content = ft.Image(src=self.changed_color[0],width=32,height=32)
-            # сохраняем в карту
-            with open(f'src/map/chamk_chetvert/{e.control.data[2]}.txt') as f:
-                mas_map = ast.literal_eval(f.readline())
-            mas_map[e.control.data[0]-1][e.control.data[1]-1] = int(self.changed_color[1][:-4])
-            my_file = open(f'src/map/chamk_chetvert/{e.control.data[2]}.txt', "w+")
-            my_file.write(f'{str(mas_map)}')
-            my_file.close()
-        self.update()
-        self.flag_hover = True
-        if self.flag_hover_back:
-            # print(self.mas_hover)
-            for i in self.mas_hover:
-                with open(f'src/map/chamk_chetvert/{i[3]}.txt') as f:
+        if self.flag_zalifka_diapazon == False: # если не выбран режим заливки диапазона
+            if self.changed_color: 
+                if e.control.content: 
+                    now_img = e.control.content
+                    e.control.content = ft.Stack([
+                        now_img,
+                        ft.Image(src=self.changed_color[0],width=32,height=32)
+                    ])
+                else: e.control.content = ft.Image(src=self.changed_color[0],width=32,height=32)
+                # сохраняем в карту
+                with open(f'src/map/chamk_chetvert/{e.control.data[2]}.txt') as f:
                     mas_map = ast.literal_eval(f.readline())
-                # # сохраняем в карту
-                mas_map[i[0]-1][i[1]-1] = int(i[2])
-                # mas_map[e.control.data[0]-1][e.control.data[1]-1] = int(self.changed_color[1][:-4])
-                my_file = open(f'src/map/chamk_chetvert/{i[3]}.txt', "w+")
+                mas_map[e.control.data[0]-1][e.control.data[1]-1] = int(self.changed_color[1][:-4])
+                my_file = open(f'src/map/chamk_chetvert/{e.control.data[2]}.txt', "w+")
                 my_file.write(f'{str(mas_map)}')
                 my_file.close()
-            self.mas_hover[:] = []
-            self.flag_hover_back = False
+            self.update()
+            self.flag_hover = True
+            if self.flag_hover_back:
+                # print(self.mas_hover)
+                for i in self.mas_hover:
+                    with open(f'src/map/chamk_chetvert/{i[3]}.txt') as f:
+                        mas_map = ast.literal_eval(f.readline())
+                    # # сохраняем в карту
+                    mas_map[i[0]-1][i[1]-1] = int(i[2])
+                    # mas_map[e.control.data[0]-1][e.control.data[1]-1] = int(self.changed_color[1][:-4])
+                    my_file = open(f'src/map/chamk_chetvert/{i[3]}.txt', "w+")
+                    my_file.write(f'{str(mas_map)}')
+                    my_file.close()
+                self.mas_hover[:] = []
+                self.flag_hover_back = False
+        else:
+            with open(f'src/map/chamk_chetvert/{e.control.data[2]}.txt') as f:
+                mas_map = ast.literal_eval(f.readline())
+            if mas_map[e.control.data[0]-1][e.control.data[1]-1] == 0:
+                # вверх по рядам
+                for j in range(e.control.data[0]-1,-1,-1):
+                    # двигаемся влево в одном ряду
+                    if mas_map[j][e.control.data[1]-1] == 0: 
+                        for i in range((e.control.data[1]-1),-1,-1):
+                            if mas_map[j][i] == 0: 
+                                mas_map[j][i] = int(self.changed_color[1][:-4])
+                            else: break
+                        # двигаемся вправо в одном ряду
+                        for i in range((e.control.data[1]),len(mas_map[0])):
+                            if mas_map[j][i] == 0: 
+                                mas_map[j][i] = int(self.changed_color[1][:-4])
+                            else: break
+                    else: break
+                # вниз по рядам
+                for j in range(e.control.data[0],len(mas_map)):
+                    if mas_map[j][e.control.data[1]-1] == 0: 
+                        for i in range((e.control.data[1]-1),-1,-1):
+                            if mas_map[j][i] == 0: 
+                                mas_map[j][i] = int(self.changed_color[1][:-4])
+                            else: break
+                        # двигаемся вправо в одном ряду
+                        for i in range((e.control.data[1]),len(mas_map[0])):
+                            if mas_map[j][i] == 0: 
+                                mas_map[j][i] = int(self.changed_color[1][:-4])
+                            else: break
+                    else: break
+                    # for i in range((e.control.data[1]-1),-1,-1):
+                    #     if mas_map[e.control.data[0]-1][i] == 0: 
+                    #         mas_map[e.control.data[0]-1][i] = int(self.changed_color[1][:-4])
+                    #     else: break
+                    # # двигаемся вправо в одном ряду
+                    # for i in range((e.control.data[1]),len(mas_map[0])):
+                    #     if mas_map[e.control.data[0]-1][i] == 0: 
+                    #         mas_map[e.control.data[0]-1][i] = int(self.changed_color[1][:-4])
+                    #     else: break
+                my_file = open(f'src/map/chamk_chetvert/{e.control.data[2]}.txt', "w+")
+                my_file.write(f'{str(mas_map)}')
+                my_file.close()
+                self.print_chank_chetvert([self.coords_1[0],self.coords_2[0],self.coords_3[0],self.coords_4[0]])
+                self.update()
+                        
               
     # клик окончание по тайлу
     def click_end_tile(self,e):
@@ -118,6 +165,21 @@ class Platforma(ft.UserControl):
                 # print(f'Заливка цветом {int(self.changed_color[1][:-4])} выполнена')
                 self.print_chank_chetvert([self.coords_1[0],self.coords_2[0],self.coords_3[0],self.coords_4[0]])
                 self.update()
+
+    # залить нули по границам
+    def fill_zero_diapazon(self,e):
+        if self.changed_color: 
+            if self.flag_zalifka_diapazon == False:
+                self.controls[0].content.controls[0].content.controls[0].content.controls[2].border = ft.border.all(2,YELLOW)
+                self.update()
+                self.flag_zalifka_diapazon = True
+            else:
+                self.controls[0].content.controls[0].content.controls[0].content.controls[2].border = ft.border.all(1,BLUE)
+                self.update()
+                self.flag_zalifka_diapazon = False
+                
+            
+        else: print('Сначала выберите чем залить')
 
     # выбираем вкладку в меню палитры
     def change_menu_palitra(self,e):
@@ -332,6 +394,7 @@ class Platforma(ft.UserControl):
                             ft.Container(ft.Column(controls=[
                                     ft.Container(width=32,height=32,border=ft.border.all(1,YELLOW),margin=ft.margin.only(left=34,top=34)), # что сейчас выбрано
                                     ft.Container(ft.Image(src='src/img/img/1.png',height=32,width=32,fit=ft.ImageFit.COVER),on_click=self.fill_zero,width=32,height=32,margin=ft.margin.only(left=34,top=20)),# залить все нули в выбранный цвет
+                                    ft.Container(ft.Image(src='src/img/img/7.png',height=32,width=32,fit=ft.ImageFit.COVER),on_click=self.fill_zero_diapazon,width=32,height=32,margin=ft.margin.only(left=34,top=20)),# залить все нули в выбранный цвет
                                     ft.Container(ft.Image(src='src/img/img/6.png',height=32,width=32,fit=ft.ImageFit.COVER),on_click=self.delete_chanks,width=32,height=32,margin=ft.margin.only(left=34,top=20)),# 
                                 ]),width=100,height=height_window_platforma,border=ft.border.all(1,YELLOW)),
                             ft.Container(ft.Container(
