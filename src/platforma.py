@@ -30,8 +30,90 @@ class Platforma(ft.UserControl):
         # print(f'{self.coords_1[0]}|{self.coords_2[0]}|{self.coords_3[0]}|{self.coords_4[0]}')
         self.flag_zalifka_diapazon = False
         
+        
+    def on_keyboard(self,e):
+        # print(e.key)
+        try:
+            self.controls[0].content.controls[1].content.controls[1].content.controls[1].content.controls[1] = Input(self.input_num_chank,str(self.coords_1[0]),50)
+            if e.key == 'W':
+                if self.coords_1[1]-1>=0 and self.coords_2[1]-1>=0 and self.coords_3[1]-1>=0 and self.coords_4[1]-1>=0:
+                    a1 = MAP_CHANK[(self.coords_1[1]-1)][(self.coords_1[2])] # получили номер четвертины чанка
+                    a2 = MAP_CHANK[(self.coords_2[1]-1)][(self.coords_2[2])] # получили номер четвертины чанка
+                    a3 = MAP_CHANK[(self.coords_3[1]-1)][(self.coords_3[2])] # получили номер четвертины чанка
+                    a4 = MAP_CHANK[(self.coords_4[1]-1)][(self.coords_4[2])] # получили номер четвертины чанка
+                    for j in range(0,len(MAP_CHANK)):
+                        for i in range(0,len(MAP_CHANK[0])):
+                            if a1 == MAP_CHANK[j][i]: # получили номер левого верхнего угла зоны просмотра, по нему дальше посчитали оординаты зоны просмотра
+                                pos_ugol_chank = [j,i]
+                                break
+                    if pos_ugol_chank[0]==0 or pos_ugol_chank[1]==0: 
+                        self.controls[0].content.controls[1].content.controls[1].content.controls[1].content.controls[1] = ft.Container(ft.Text('!',color=WHITE),width=50,height=50,bgcolor=RED)
+                        self.update()
+                    
+                    self.coords_1 = [a1,pos_ugol_chank[0],pos_ugol_chank[1]] # перезаписываем массив со значением и координатами этих значений
+                    self.coords_2 = [a2,pos_ugol_chank[0],(pos_ugol_chank[1]+1)] # перезаписываем массив со значением и координатами этих значений
+                    self.coords_3 = [a3,(pos_ugol_chank[0]+1),pos_ugol_chank[1]] # перезаписываем массив со значением и координатами этих значений
+                    self.coords_4 = [a4,(pos_ugol_chank[0]+1),(pos_ugol_chank[1]+1)] # перезаписываем массив со значением и координатами этих значений
+            if e.key == 'S':
+                a1 = MAP_CHANK[(self.coords_1[1]+1)][(self.coords_1[2])] # получили номер четвертины чанка
+                a2 = MAP_CHANK[(self.coords_2[1]+1)][(self.coords_2[2])] # получили номер четвертины чанка
+                a3 = MAP_CHANK[(self.coords_3[1]+1)][(self.coords_3[2])] # получили номер четвертины чанка
+                a4 = MAP_CHANK[(self.coords_4[1]+1)][(self.coords_4[2])] # получили номер четвертины чанка
+                for j in range(0,len(MAP_CHANK)):
+                    for i in range(0,len(MAP_CHANK[0])):
+                        if a1 == MAP_CHANK[j][i]: # получили номер левого верхнего угла зоны просмотра, по нему дальше посчитали оординаты зоны просмотра
+                            pos_ugol_chank = [j,i]
+                            break
+                if pos_ugol_chank[0]==0 or pos_ugol_chank[1]==0: 
+                    self.controls[0].content.controls[1].content.controls[1].content.controls[1].content.controls[1] = ft.Container(ft.Text('!',color=WHITE),width=50,height=50,bgcolor=RED)
+                    self.update()
+                self.coords_1 = [a1,pos_ugol_chank[0],pos_ugol_chank[1]] # перезаписываем массив со значением и координатами этих значений
+                self.coords_2 = [a2,pos_ugol_chank[0],(pos_ugol_chank[1]+1)] # перезаписываем массив со значением и координатами этих значений
+                self.coords_3 = [a3,(pos_ugol_chank[0]+1),pos_ugol_chank[1]] # перезаписываем массив со значением и координатами этих значений
+                self.coords_4 = [a4,(pos_ugol_chank[0]+1),(pos_ugol_chank[1]+1)] # перезаписываем массив со значением и координатами этих значений
+            if e.key == 'A':
+                if self.coords_1[2]-1>=0 and self.coords_2[2]-1>=0 and self.coords_3[2]-1>=0 and self.coords_4[2]-1>=0:
+                    a1 = MAP_CHANK[(self.coords_1[1])][(self.coords_1[2]-1)] # получили номер четвертины чанка
+                    # print(f"==>> a1: {a1}")
+                    a2 = MAP_CHANK[(self.coords_2[1])][(self.coords_2[2]-1)] # получили номер четвертины чанка
+                    a3 = MAP_CHANK[(self.coords_3[1])][(self.coords_3[2]-1)] # получили номер четвертины чанка
+                    a4 = MAP_CHANK[(self.coords_4[1])][(self.coords_4[2]-1)] # получили номер четвертины чанка
+                    for j in range(0,len(MAP_CHANK)):
+                        for i in range(0,len(MAP_CHANK[0])):
+                            if a1 == MAP_CHANK[j][i]: # получили номер левого верхнего угла зоны просмотра, по нему дальше посчитали оординаты зоны просмотра
+                                pos_ugol_chank = [j,i]
+                                # print(f"==>> pos_ugol_chank: {pos_ugol_chank}")
+                                break
+                    
+                    if pos_ugol_chank[1]==0 or pos_ugol_chank[0]==0: 
+                        self.controls[0].content.controls[1].content.controls[1].content.controls[1].content.controls[1] = ft.Container(ft.Text('|<',color=WHITE),width=50,height=50,bgcolor=RED)
+                        self.update()
+                    self.coords_1 = [a1,pos_ugol_chank[0],pos_ugol_chank[1]] # перезаписываем массив со значением и координатами этих значений
+                    self.coords_2 = [a2,pos_ugol_chank[0],(pos_ugol_chank[1]+1)] # перезаписываем массив со значением и координатами этих значений
+                    self.coords_3 = [a3,(pos_ugol_chank[0]+1),pos_ugol_chank[1]] # перезаписываем массив со значением и координатами этих значений
+                    self.coords_4 = [a4,(pos_ugol_chank[0]+1),(pos_ugol_chank[1]+1)] # перезаписываем массив со значением и координатами этих значений
+            if e.key == 'D':
+                a1 = MAP_CHANK[(self.coords_1[1])][(self.coords_1[2]+1)] # получили номер четвертины чанка
+                a2 = MAP_CHANK[(self.coords_2[1])][(self.coords_2[2]+1)] # получили номер четвертины чанка
+                a3 = MAP_CHANK[(self.coords_3[1])][(self.coords_3[2]+1)] # получили номер четвертины чанка
+                a4 = MAP_CHANK[(self.coords_4[1])][(self.coords_4[2]+1)] # получили номер четвертины чанка
+                for j in range(0,len(MAP_CHANK)):
+                    for i in range(0,len(MAP_CHANK[0])):
+                        if a1 == MAP_CHANK[j][i]: # получили номер левого верхнего угла зоны просмотра, по нему дальше посчитали оординаты зоны просмотра
+                            pos_ugol_chank = [j,i]
+                            break
+                if pos_ugol_chank[0]==0 or pos_ugol_chank[1]==0: 
+                    self.controls[0].content.controls[1].content.controls[1].content.controls[1].content.controls[1] = ft.Container(ft.Text('!',color=WHITE),width=50,height=50,bgcolor=RED)
+                    self.update()
+                self.coords_1 = [a1,pos_ugol_chank[0],pos_ugol_chank[1]] # перезаписываем массив со значением и координатами этих значений
+                self.coords_2 = [a2,pos_ugol_chank[0],(pos_ugol_chank[1]+1)] # перезаписываем массив со значением и координатами этих значений
+                self.coords_3 = [a3,(pos_ugol_chank[0]+1),pos_ugol_chank[1]] # перезаписываем массив со значением и координатами этих значений
+                self.coords_4 = [a4,(pos_ugol_chank[0]+1),(pos_ugol_chank[1]+1)] # перезаписываем массив со значением и координатами этих значений
+            self.print_chank_chetvert([a1,a2,a3,a4])
+        except Exception as e:
+            print(f'У границы или ошибка - {e}')
             
-
+            
     # клик начало по тайлу
     def click_start_tile(self,e):
         if self.flag_zalifka_diapazon == False: # если не выбран режим заливки диапазона
@@ -382,11 +464,14 @@ class Platforma(ft.UserControl):
             self.print_chank_chetvert([a1,a2,a3,a4])
             # print(f'{a1}|{a2}|{a3}|{a4}') # 1.25|2|1.75|2.5
             # self.print_chank_chetvert([a1,a2,a3,a4])
+            # print(f'{a1} - {a2} - {a3} - {a4}')
         except Exception as e:
-            print('У границы или ошибка')
+            # print(f'{a1} - {a2} - {a3} - {a4}')
+            print(f'У границы или ошибка - {e}')
 
 
     def build(self):
+        # self.page.on_keyboard_event = self.on_keyboard
         self.main_page = ft.Container(
             ft.Row(controls=[
                 ft.Container(
