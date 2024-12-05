@@ -30,7 +30,7 @@ class Platforma(ft.UserControl):
         # print(f'{self.coords_1[0]}|{self.coords_2[0]}|{self.coords_3[0]}|{self.coords_4[0]}')
         self.flag_zalifka_diapazon = False
         
-        
+    # движения по кнопкам
     def on_keyboard(self,e):
         # print(e.key)
         try:
@@ -113,7 +113,6 @@ class Platforma(ft.UserControl):
         except Exception as e:
             print(f'У границы или ошибка - {e}')
             
-            
     # клик начало по тайлу
     def click_start_tile(self,e):
         if self.flag_zalifka_diapazon == False: # если не выбран режим заливки диапазона
@@ -150,50 +149,50 @@ class Platforma(ft.UserControl):
         else:
             with open(f'src/map/chamk_chetvert/{e.control.data[2]}.txt') as f:
                 mas_map = ast.literal_eval(f.readline())
-            if mas_map[e.control.data[0]-1][e.control.data[1]-1] == 0:
-                # вверх по рядам
-                for j in range(e.control.data[0]-1,-1,-1):
-                    # двигаемся влево в одном ряду
-                    if mas_map[j][e.control.data[1]-1] == 0: 
-                        for i in range((e.control.data[1]-1),-1,-1):
-                            if mas_map[j][i] == 0: 
-                                mas_map[j][i] = int(self.changed_color[1][:-4])
-                            else: break
-                        # двигаемся вправо в одном ряду
-                        for i in range((e.control.data[1]),len(mas_map[0])):
-                            if mas_map[j][i] == 0: 
-                                mas_map[j][i] = int(self.changed_color[1][:-4])
-                            else: break
-                    else: break
-                # вниз по рядам
-                for j in range(e.control.data[0],len(mas_map)):
-                    if mas_map[j][e.control.data[1]-1] == 0: 
-                        for i in range((e.control.data[1]-1),-1,-1):
-                            if mas_map[j][i] == 0: 
-                                mas_map[j][i] = int(self.changed_color[1][:-4])
-                            else: break
-                        # двигаемся вправо в одном ряду
-                        for i in range((e.control.data[1]),len(mas_map[0])):
-                            if mas_map[j][i] == 0: 
-                                mas_map[j][i] = int(self.changed_color[1][:-4])
-                            else: break
-                    else: break
-                    # for i in range((e.control.data[1]-1),-1,-1):
-                    #     if mas_map[e.control.data[0]-1][i] == 0: 
-                    #         mas_map[e.control.data[0]-1][i] = int(self.changed_color[1][:-4])
-                    #     else: break
-                    # # двигаемся вправо в одном ряду
-                    # for i in range((e.control.data[1]),len(mas_map[0])):
-                    #     if mas_map[e.control.data[0]-1][i] == 0: 
-                    #         mas_map[e.control.data[0]-1][i] = int(self.changed_color[1][:-4])
-                    #     else: break
-                my_file = open(f'src/map/chamk_chetvert/{e.control.data[2]}.txt', "w+")
-                my_file.write(f'{str(mas_map)}')
-                my_file.close()
-                self.print_chank_chetvert([self.coords_1[0],self.coords_2[0],self.coords_3[0],self.coords_4[0]])
-                self.update()
-                        
-              
+            # if mas_map[e.control.data[0]-1][e.control.data[1]-1] == 0:
+            yze_zalito = mas_map[e.control.data[0]-1][e.control.data[1]-1]
+            # вверх по рядам
+            for j in range(e.control.data[0]-1,-1,-1):
+                # двигаемся влево в одном ряду
+                if mas_map[j][e.control.data[1]-1] == yze_zalito: 
+                    for i in range((e.control.data[1]-1),-1,-1):
+                        if mas_map[j][i] == yze_zalito: 
+                            mas_map[j][i] = int(self.changed_color[1][:-4])
+                        else: break
+                    # двигаемся вправо в одном ряду
+                    for i in range((e.control.data[1]),len(mas_map[0])):
+                        if mas_map[j][i] == yze_zalito: 
+                            mas_map[j][i] = int(self.changed_color[1][:-4])
+                        else: break
+                else: break
+            # вниз по рядам
+            for j in range(e.control.data[0],len(mas_map)):
+                if mas_map[j][e.control.data[1]-1] == yze_zalito: 
+                    for i in range((e.control.data[1]-1),-1,-1):
+                        if mas_map[j][i] == yze_zalito: 
+                            mas_map[j][i] = int(self.changed_color[1][:-4])
+                        else: break
+                    # двигаемся вправо в одном ряду
+                    for i in range((e.control.data[1]),len(mas_map[0])):
+                        if mas_map[j][i] == yze_zalito: 
+                            mas_map[j][i] = int(self.changed_color[1][:-4])
+                        else: break
+                else: break
+                # for i in range((e.control.data[1]-1),-1,-1):
+                #     if mas_map[e.control.data[0]-1][i] == 0: 
+                #         mas_map[e.control.data[0]-1][i] = int(self.changed_color[1][:-4])
+                #     else: break
+                # # двигаемся вправо в одном ряду
+                # for i in range((e.control.data[1]),len(mas_map[0])):
+                #     if mas_map[e.control.data[0]-1][i] == 0: 
+                #         mas_map[e.control.data[0]-1][i] = int(self.changed_color[1][:-4])
+                #     else: break
+            my_file = open(f'src/map/chamk_chetvert/{e.control.data[2]}.txt', "w+")
+            my_file.write(f'{str(mas_map)}')
+            my_file.close()
+            self.print_chank_chetvert([self.coords_1[0],self.coords_2[0],self.coords_3[0],self.coords_4[0]])
+            self.update()
+                              
     # клик окончание по тайлу
     def click_end_tile(self,e):
         self.flag_hover = False
