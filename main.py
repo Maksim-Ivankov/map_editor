@@ -2,7 +2,7 @@ from variable import *
 from imports import *
 
 from src.platforma import Platforma
-# from src.platforma import on
+# from src.platforma import on №
 
 class Main:
     def __init__(self):
