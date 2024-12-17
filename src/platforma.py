@@ -274,8 +274,15 @@ class Platforma(ft.UserControl):
     def dev_color(self,dev_color):
         colors_mas = []
         for i in os.listdir(f'src/tilemap/palitra/{dev_color}'):
-            colors_mas.append(ft.Container(ft.Image(src=f'src/tilemap/palitra/{dev_color}/{i}',width=32,height=32),on_click=self.change_dev_color,data=[f'src/tilemap/palitra/{dev_color}/{i}',i],width=32,height=32,bgcolor=BLUE))
-        return ft.Container(ft.Row(controls=colors_mas,wrap=True,spacing=5,run_spacing=5,),width=350,padding=10)
+            if i!='main.png':
+                colors_mas.append(ft.Container(ft.Image(src=f'src/tilemap/palitra/{dev_color}/{i}',width=32,height=32),on_click=self.change_dev_color,data=[f'src/tilemap/palitra/{dev_color}/{i}',i],width=32,height=32,bgcolor=BLUE))
+        if os.path.isfile(f'src/tilemap/palitra/{dev_color}/main.png'):
+            return ft.Container(ft.Column(controls=[
+                ft.Container(ft.Row(controls=colors_mas,wrap=True,spacing=5,run_spacing=5,),width=350,padding=10),
+                ft.Container(ft.Image(src=f'src/tilemap/palitra/{dev_color}/main.png',width=350),width=350,padding=10),
+            ]))
+        else:
+            return ft.Container(ft.Row(controls=colors_mas,wrap=True,spacing=5,run_spacing=5,),width=350,padding=10)
 
     def change_dev_color(self,e):
         # print(e.control.data)
