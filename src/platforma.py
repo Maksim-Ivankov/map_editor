@@ -118,21 +118,17 @@ class Platforma(ft.UserControl):
         if self.flag_zalifka_diapazon == False: # если не выбран режим заливки диапазона
             if self.changed_color: 
                 if e.control.content: 
-                    # print(self.changed_color[0])
-                    if int(self.changed_color[0].split('/')[-1][:-4]) in COLOR_PNG:
-                        print(int(self.changed_color[1][:-4]))
-                        # now_img = e.control.content
-                        # e.control.content = ft.Image(src=self.changed_color[0],width=COLOR_PNG_size[self.changed_color[0].split('/')[-1][:-4]][0],height=COLOR_PNG_size[self.changed_color[0].split('/')[-1][:-4]][1])
-                        # e.control.content = ft.Stack([
-                        #     now_img,
-                        #     ft.Image(src=self.changed_color[0],width=COLOR_PNG_size[self.changed_color[0].split('/')[-1][:-4]][0],height=COLOR_PNG_size[self.changed_color[0].split('/')[-1][:-4]][1])
-                        # ])
-                        # print(e.control.content)
+                    # отрисовка фигур с прозрачным фоном целиком от левого верхнего угла
+                    if int(self.changed_color[0].split('/')[-1][:-4]) in COLOR_PNG: 
                         
                         with open(f'src/map/chamk_chetvert/{e.control.data[2]}.txt') as f:
                             mas_map = ast.literal_eval(f.readline())
+                        # если создаем в ячейкку первый раз
                         for data in COLOR_PNG_size[str(self.changed_color[1][:-4])]:
-                            mas_map[e.control.data[0]-1+data[0]][e.control.data[1]-1+data[1]] = int(data[2])
+                            if type(mas_map[e.control.data[0]-1+data[0]][e.control.data[1]-1+data[1]]) is int:
+                                mas_map[e.control.data[0]-1+data[0]][e.control.data[1]-1+data[1]] = [mas_map[e.control.data[0]-1+data[0]][e.control.data[1]-1+data[1]],int(data[2])]
+                            else:
+                                mas_map[e.control.data[0]-1+data[0]][e.control.data[1]-1+data[1]].append(int(data[2]))
                         my_file = open(f'src/map/chamk_chetvert/{e.control.data[2]}.txt', "w+")
                         my_file.write(f'{str(mas_map)}')
                         my_file.close()
@@ -368,12 +364,21 @@ class Platforma(ft.UserControl):
             # рисуем сетку
             line_x_mas = []
             line_y_mas = []
+            stack_for_tile = []
+            stack_for_tile.clear()
             line_y_mas.clear()
             for i in range(1,16):
                 line_x_mas.clear()
                 for j in range(1,16):
+                    # если в ячейке пусто
                     if mas_map[i-1][j-1] == 0: line_x_mas.append(ft.Container(data=[i,j,cords_i],on_hover=self.hover_tile,on_click=self.click_end_tile,on_tap_down=self.click_start_tile,height=TILESIZE,width=TILESIZE,border=ft.border.all(0.1,BLUE)))
-                    else: line_x_mas.append(ft.Container(ft.Image(src=f'src/tilemap/all/{mas_map[i-1][j-1]}.png',width=32,height=32),data=[i,j,cords_i],on_hover=self.hover_tile,on_click=self.click_end_tile,on_tap_down=self.click_start_tile,height=TILESIZE,width=TILESIZE,border=ft.border.all(0.1,BLUE)))
+                    # если в ячейке число
+                    elif type(mas_map[i-1][j-1]) is int: line_x_mas.append(ft.Container(ft.Image(src=f'src/tilemap/all/{mas_map[i-1][j-1]}.png',width=32,height=32),data=[i,j,cords_i],on_hover=self.hover_tile,on_click=self.click_end_tile,on_tap_down=self.click_start_tile,height=TILESIZE,width=TILESIZE,border=ft.border.all(0.1,BLUE)))
+                    # если в ячейке массив
+                    else: 
+                        for el_mas_tile in mas_map[i-1][j-1]:
+                            stack_for_tile.append(ft.Image(src=f'src/tilemap/all/{el_mas_tile}.png',width=32,height=32))
+                        line_x_mas.append(ft.Container(ft.Stack(stack_for_tile),data=[i,j,cords_i],on_hover=self.hover_tile,on_click=self.click_end_tile,on_tap_down=self.click_start_tile,height=TILESIZE,width=TILESIZE,border=ft.border.all(0.1,BLUE)))
                 line_y_mas.append(ft.Container(ft.Row(controls=line_x_mas,spacing=0,run_spacing=0,)))
             mas_fore_pol_chanks.append(line_y_mas)
         if regime == 'default':
