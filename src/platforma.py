@@ -120,7 +120,7 @@ class Platforma(ft.UserControl):
                 if e.control.content: 
                     # print(self.changed_color[0])
                     if int(self.changed_color[0].split('/')[-1][:-4]) in COLOR_PNG:
-                        print('В разработке')
+                        print(int(self.changed_color[1][:-4]))
                         # now_img = e.control.content
                         # e.control.content = ft.Image(src=self.changed_color[0],width=COLOR_PNG_size[self.changed_color[0].split('/')[-1][:-4]][0],height=COLOR_PNG_size[self.changed_color[0].split('/')[-1][:-4]][1])
                         # e.control.content = ft.Stack([
@@ -128,22 +128,40 @@ class Platforma(ft.UserControl):
                         #     ft.Image(src=self.changed_color[0],width=COLOR_PNG_size[self.changed_color[0].split('/')[-1][:-4]][0],height=COLOR_PNG_size[self.changed_color[0].split('/')[-1][:-4]][1])
                         # ])
                         # print(e.control.content)
+                        
+                        with open(f'src/map/chamk_chetvert/{e.control.data[2]}.txt') as f:
+                            mas_map = ast.literal_eval(f.readline())
+                        for data in COLOR_PNG_size[str(self.changed_color[1][:-4])]:
+                            mas_map[e.control.data[0]-1+data[0]][e.control.data[1]-1+data[1]] = int(data[2])
+                        my_file = open(f'src/map/chamk_chetvert/{e.control.data[2]}.txt', "w+")
+                        my_file.write(f'{str(mas_map)}')
+                        my_file.close()
+                        self.print_chank_chetvert([self.coords_1[0],self.coords_2[0],self.coords_3[0],self.coords_4[0]])    
                     else:
                         now_img = e.control.content
                         e.control.content = ft.Stack([
                             now_img,
                             ft.Image(src=self.changed_color[0],width=32,height=32)
                         ])
-                else: e.control.content = ft.Image(src=self.changed_color[0],width=32,height=32)
-                # сохраняем в карту
-                with open(f'src/map/chamk_chetvert/{e.control.data[2]}.txt') as f:
-                    mas_map = ast.literal_eval(f.readline())
-                mas_map[e.control.data[0]-1][e.control.data[1]-1] = int(self.changed_color[1][:-4])
-                my_file = open(f'src/map/chamk_chetvert/{e.control.data[2]}.txt', "w+")
-                my_file.write(f'{str(mas_map)}')
-                my_file.close()
+                        # сохраняем в карту
+                        with open(f'src/map/chamk_chetvert/{e.control.data[2]}.txt') as f:
+                            mas_map = ast.literal_eval(f.readline())
+                        mas_map[e.control.data[0]-1][e.control.data[1]-1] = int(self.changed_color[1][:-4])
+                        my_file = open(f'src/map/chamk_chetvert/{e.control.data[2]}.txt', "w+")
+                        my_file.write(f'{str(mas_map)}')
+                        my_file.close()
+                        self.flag_hover = True
+                else: 
+                    e.control.content = ft.Image(src=self.changed_color[0],width=32,height=32)
+                    # сохраняем в карту
+                    with open(f'src/map/chamk_chetvert/{e.control.data[2]}.txt') as f:
+                        mas_map = ast.literal_eval(f.readline())
+                    mas_map[e.control.data[0]-1][e.control.data[1]-1] = int(self.changed_color[1][:-4])
+                    my_file = open(f'src/map/chamk_chetvert/{e.control.data[2]}.txt', "w+")
+                    my_file.write(f'{str(mas_map)}')
+                    my_file.close()
+                    self.flag_hover = True
             self.update()
-            self.flag_hover = True
             if self.flag_hover_back:
                 # print(self.mas_hover)
                 for i in self.mas_hover:
