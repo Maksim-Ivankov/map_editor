@@ -118,11 +118,22 @@ class Platforma(ft.UserControl):
         if self.flag_zalifka_diapazon == False: # если не выбран режим заливки диапазона
             if self.changed_color: 
                 if e.control.content: 
-                    now_img = e.control.content
-                    e.control.content = ft.Stack([
-                        now_img,
-                        ft.Image(src=self.changed_color[0],width=32,height=32)
-                    ])
+                    # print(self.changed_color[0])
+                    if int(self.changed_color[0].split('/')[-1][:-4]) in COLOR_PNG:
+                        print('В разработке')
+                        # now_img = e.control.content
+                        # e.control.content = ft.Image(src=self.changed_color[0],width=COLOR_PNG_size[self.changed_color[0].split('/')[-1][:-4]][0],height=COLOR_PNG_size[self.changed_color[0].split('/')[-1][:-4]][1])
+                        # e.control.content = ft.Stack([
+                        #     now_img,
+                        #     ft.Image(src=self.changed_color[0],width=COLOR_PNG_size[self.changed_color[0].split('/')[-1][:-4]][0],height=COLOR_PNG_size[self.changed_color[0].split('/')[-1][:-4]][1])
+                        # ])
+                        # print(e.control.content)
+                    else:
+                        now_img = e.control.content
+                        e.control.content = ft.Stack([
+                            now_img,
+                            ft.Image(src=self.changed_color[0],width=32,height=32)
+                        ])
                 else: e.control.content = ft.Image(src=self.changed_color[0],width=32,height=32)
                 # сохраняем в карту
                 with open(f'src/map/chamk_chetvert/{e.control.data[2]}.txt') as f:
